@@ -22,6 +22,7 @@ export interface Post {
   commentsCount: number;
   createdAt: string;
   category: PostCategory;
+  url: string;
 }
 
 const now = new Date();
@@ -39,6 +40,7 @@ const mockPosts: Post[] = [
     commentsCount: 88,
     createdAt: subHours(now, 3).toISOString(),
     category: '뻘글',
+    url: 'https://www.reddit.com/r/raspberry_pi/comments/q5g1x5/i_built_a_selfwatering_plant_pot_with_a/',
   },
   {
     id: '2',
@@ -52,6 +54,7 @@ const mockPosts: Post[] = [
     commentsCount: 1542,
     createdAt: subHours(now, 0.5).toISOString(),
     category: '뻘글',
+    url: 'https://www.reddit.com/r/askscience/comments/q5g1x5/whats_a_scientific_myth_that_youre_tired_of/',
   },
   {
     id: '3',
@@ -65,6 +68,7 @@ const mockPosts: Post[] = [
     commentsCount: 231,
     createdAt: subHours(now, 8).toISOString(),
     category: '연예',
+    url: 'https://www.reddit.com/r/StardewValley/comments/q5g1x5/stardew_valley_is_the_perfect_game_to_unwind/',
   },
   {
     id: '4',
@@ -78,6 +82,7 @@ const mockPosts: Post[] = [
     commentsCount: 530,
     createdAt: subDays(now, 1).toISOString(),
     category: '투자',
+    url: 'https://www.reddit.com/r/investing/comments/q5g1x5/thoughts_on_the_recent_market_dip_are_we/',
   },
   {
     id: '5',
@@ -91,6 +96,7 @@ const mockPosts: Post[] = [
     commentsCount: 1200,
     createdAt: subDays(now, 3).toISOString(),
     category: '정치',
+    url: 'https://www.reddit.com/r/politics/comments/q5g1x5/the_new_bill_just_passed_what_are_the_immediate/',
   },
 ];
 
@@ -185,5 +191,7 @@ export const getCommentsByPostId = async (postId: string): Promise<Comment[]> =>
   await new Promise(resolve => setTimeout(resolve, 150));
   return mockComments
     .filter(c => c.postId === postId)
-    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    .slice(0, 3); // Get only the top 3 comments
 };
+

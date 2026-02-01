@@ -7,9 +7,10 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { ArrowBigUp, MessageSquare } from 'lucide-react';
+import { ArrowBigUp, MessageSquare, ExternalLink } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { ko } from 'date-fns/locale';
+import { anonymizeAuthor } from '@/lib/utils';
 
 type PostListItemProps = {
   post: Post;
@@ -29,11 +30,21 @@ export default function PostListItem({ post }: PostListItemProps) {
             {post.translatedTitle}
           </CardTitle>
           <CardDescription>
-            by {post.author} • {timeAgo}
+            by {anonymizeAuthor(post.author)} • {timeAgo}
           </CardDescription>
         </CardHeader>
         <CardFooter className="flex justify-end text-sm text-muted-foreground">
           <div className="flex items-center gap-4">
+            <Link
+              href={post.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 hover:text-primary"
+              onClick={e => e.stopPropagation()}
+            >
+              <ExternalLink className="size-4" />
+              <span>원문</span>
+            </Link>
             <div className="flex items-center gap-1">
               <ArrowBigUp className="size-4" />
               <span>{post.upvotes.toLocaleString()}</span>

@@ -6,6 +6,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { useEffect, useState } from 'react';
 import { Skeleton } from '../ui/skeleton';
+import { anonymizeAuthor } from '@/lib/utils';
 
 type CommentProps = {
   comment: CommentType;
@@ -38,7 +39,7 @@ export default function Comment({ comment }: CommentProps) {
         <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted">
           <User className="size-4 text-muted-foreground" />
         </div>
-        <span className="text-sm font-bold">{comment.author}</span>
+        <span className="text-sm font-bold">{anonymizeAuthor(comment.author)}</span>
         <time dateTime={comment.createdAt} className="text-xs text-muted-foreground">
           {timeAgo}
         </time>

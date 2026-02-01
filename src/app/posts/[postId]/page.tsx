@@ -9,8 +9,15 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@/components/ui/tabs';
 import { formatDistanceToNow } from 'date-fns';
 import { ko } from 'date-fns/locale';
+import { anonymizeAuthor } from '@/lib/utils';
 
 type PostPageProps = {
   params: { postId: string };
@@ -46,7 +53,7 @@ export default async function PostPage({ params }: PostPageProps) {
           <CardDescription className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 pt-2">
             <div className="flex items-center gap-2">
               <User className="size-4" />
-              <span>{post.author}</span>
+              <span>{anonymizeAuthor(post.author)}</span>
               <span className="hidden md:inline-block">•</span>
               <time dateTime={post.createdAt}>{timeAgo}</time>
             </div>
@@ -59,11 +66,27 @@ export default async function PostPage({ params }: PostPageProps) {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-6 text-base leading-relaxed text-foreground">
-            {post.translatedContent.split('\n').map((paragraph, index) => (
-              <p key={index}>{paragraph}</p>
-            ))}
-          </div>
+          <Tabs defaultValue="translated" className="w-full">
+            <TabsList>
+              <TabsTrigger value="translated">번역본</TabsTrigger>
+              <TabsTrigger value="original">원문</TabsTrigger>
+            </TabsList>
+            <TabsContent value="translated">
+              <div className="space-y-6 pt-4 text-base leading-relaxed text-foreground">
+                {post.translatedContent.split('\n').map((paragraph, index) => (
+                  <p key={index}>{paragraph}</p>
+                ))}
+              </div>
+            </TabsContent>
+            <TabsContent value="original">
+              <div className="space-y-6 pt-4 text-base leading-relaxed text-foreground">
+                <h3 className="text-xl font-bold">{post.originalTitle}</h3>
+                {post.originalContent.split('\n').map((paragraph, index) => (
+                  <p key={index}>{paragraph}</p>
+                ))}
+              </div>
+            </TabsContent>
+          </Tabs>
         </CardContent>
       </Card>
 
