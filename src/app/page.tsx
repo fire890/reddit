@@ -1,8 +1,30 @@
-import PostList from '@/components/posts/PostList';
-import { getPosts } from '@/lib/data';
+'use client';
 
-export default async function Home() {
-  const posts = await getPosts();
+import { useEffect, useState } from 'react';
+import PostList from '@/components/posts/PostList';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { getPosts, Post, PostCategory, TimeRange } from '@/lib/data';
+
+const CATEGORIES: (PostCategory | '전체')[] = ['전체', '정치', '투자', '연예', '뻘글'];
+const TIME_RANGES: TimeRange[] = ['실시간', '오늘', '이번 주'];
+
+export default function Home() {
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [category, setCategory] = useState<PostCategory | '전체'>('전체');
+  const [timeRange, setTimeRange] = useState<TimeRange>('이번 주');
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      setLoading(true);
+      const fetchedPosts = await getPosts(category, timeRange);
+      setPosts(fetchedPosts);
+      setLoading(false);
+    };
+
+    fetchPosts();
+  }, [category, timeRange]);
 
   return (
     <div className="w-full">
@@ -11,10 +33,38 @@ export default async function Home() {
           인기 번역글
         </h1>
         <p className="mt-4 text-lg text-muted-foreground">
-          매 시간 Reddit의 인기 게시글이 한국어로 번역되어 업데이트 됩니다.
+          Reddit의 인기 게시글을 카테고리와 시간대별로 확인해 보세요.
         </p>
       </div>
-      <PostList posts={posts} />
+
+      <div className="mb-8 flex flex-col items-center gap-6">
+        <Tabs
+          defaultValue={category}
+          onValueChange={value => setCategory(value as PostCategory | '전체')}
+        >
+          <TabsList className="grid w-full grid-cols-5">
+            {CATEGORIES.map(cat => (
+              <TabsTrigger key={cat} value={cat}>
+                {cat}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
+        <div className="flex items-center gap-2">
+          {TIME_RANGES.map(range => (
+            <Button
+              key={range}
+              variant={timeRange === range ? 'default' : 'outline'}
+              onClick={() => setTimeRange(range)}
+              size="sm"
+            >
+              {range}
+            </Button>
+          ))}
+        </div>
+      </div>
+
+      <PostList posts={loading ? [] : posts} />
     </div>
   );
 }
