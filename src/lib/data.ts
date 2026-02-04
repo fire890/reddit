@@ -1,5 +1,4 @@
 import { getTopPosts } from './reddit';
-import { Post, PostCategory } from './reddit';
 
 export interface Comment {
   id: string;
@@ -9,8 +8,22 @@ export interface Comment {
   createdAt: string;
 }
 
+export type PostCategory = '정치' | '투자' | '연예' | '뻘글';
+export interface Post {
+  id: string;
+  author: string;
+  originalTitle: string;
+  originalContent: string;
+  translatedTitle: string;
+  translatedContent: string;
+  upvotes: number;
+  commentsCount: number;
+  createdAt: string;
+  category: PostCategory;
+  url: string;
+}
+
 export type TimeRange = '실시간' | '오늘' | '이번 주';
-export { Post, PostCategory };
 
 let posts: Post[] = [];
 

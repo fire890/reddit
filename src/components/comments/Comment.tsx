@@ -13,7 +13,7 @@ type CommentProps = {
 export default function Comment({ comment }: CommentProps) {
   const timeAgo = comment.createdAt
     ? formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true, locale: ko })
-    L : '';
+    : '';
 
   return (
     <div className="flex flex-col gap-2 border-b border-border/50 pb-4 last:border-b-0">
