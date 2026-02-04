@@ -25,18 +25,25 @@ const categoryToSubreddit: Record<PostCategory, string> = {
 async function fetchPostsFromSubreddit(subreddit: string, limit: number = 1): Promise<Post[]> {
   try {
     const url = `https://www.reddit.com/r/${subreddit}/top.json?limit=${limit}&t=day`;
+    console.log(`Fetching from URL: ${url}`);
     const response = await fetch(url, {
       headers: {
         'User-Agent': 'gemini-reddit-app/1.0',
       },
     });
 
+    console.log(`Response status for ${subreddit}: ${response.status}`);
+
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const { data } = await response.json();
+    const responseJson = await response.json();
+    console.log(`Raw Reddit API response for ${subreddit}:`, JSON.stringify(responseJson, null, 2));
+
+    const { data } = responseJson;
     const posts = data.children as RedditPost[];
+    console.log(`Posts before mapping for ${subreddit}:`, posts);
 
     return posts.map((post) => ({
       id: post.data.id,
