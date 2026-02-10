@@ -12,5 +12,5 @@ jobs:
     steps:
       - name: Call API to translate Reddit posts
         run: |
-          curl -X GET "https://YOUR_VERCEL_PROJECT_URL/api/reddit-task" 
+          curl -X GET "https://reddit-umber.vercel.app//api/reddit-task" 
           -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}"

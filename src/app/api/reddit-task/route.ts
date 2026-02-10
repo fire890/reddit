@@ -7,22 +7,38 @@ import admin from 'firebase-admin';
 // Vercel 환경 변수에서 서비스 계정 키를 가져옵니다.
 // 환경 변수는 Base64로 인코딩된 JSON 문자열이어야 합니다.
 if (!admin.apps.length) {
-  const serviceAccount = JSON.parse(
-    Buffer.from(process.env.FIREBASE_SERVICE_ACCOUNT_KEY!, 'base64').toString('utf-8')
-  );
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-  });
+  const serviceAccountKey = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
+  if (serviceAccountKey) {
+    try {
+      const serviceAccount = JSON.parse(
+        Buffer.from(serviceAccountKey, 'base64').toString('utf-8')
+      );
+      admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount),
+      });
+    } catch (e) {
+      console.error('Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY', e);
+    }
+  } else {
+    console.warn(
+      'Firebase Admin SDK not initialized. The FIREBASE_SERVICE_ACCOUNT_KEY environment variable is missing.'
+    );
+  }
 }
 
-const db = admin.firestore();
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+const db = admin.apps.length ? admin.firestore() : null;
+// Gemini API 키가 있는 경우에만 genAI 클라이언트를 초기화합니다.
+const genAI = process.env.GEMINI_API_KEY
+  ? new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
+  : null;
 
 // 번역 함수
 async function translateText(text: string): Promise<string> {
-  if (!text) return '';
+  // 번역할 텍스트가 없거나 genAI 클라이언트가 초기화되지 않은 경우 원본 텍스트를 반환합니다.
+  if (!text || !genAI) return text;
   try {
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+    // 최신 Gemini 모델을 사용합니다.
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro-latest' });
     const prompt = `Translate the following English text to Korean. Retain original formatting like Markdown, newlines, and spacing:
 
 "${text}"`;
@@ -40,6 +56,14 @@ export async function GET(req: NextRequest) {
   const authHeader = req.headers.get('authorization');
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+  }
+
+  // db 또는 genAI가 구성되지 않은 경우 오류를 반환합니다.
+  if (!db || !genAI) {
+    return NextResponse.json(
+      { message: 'Server not configured for Firebase or Gemini.' },
+      { status: 500 }
+    );
   }
 
   try {

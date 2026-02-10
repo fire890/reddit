@@ -36,7 +36,7 @@ export default function PostListItem({ post }: PostListItemProps) {
         <CardFooter className="flex justify-end text-sm text-muted-foreground">
           <div className="flex items-center gap-4">
             <Link
-              href={post.url}
+              href={post.permalink}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-1 hover:text-primary"
