@@ -52,7 +52,7 @@ async function translateText(text: string): Promise<string> {
   }
 }
 
-export async function GET(req: NextRequest) {
+export async function POST(req: NextRequest) {
   // CRON 시크릿 키 인증
   const authHeader = req.headers.get('authorization');
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
