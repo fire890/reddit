@@ -1,16 +1,15 @@
-
 name: Reddit Post Translation Cron Job
 
 on:
   schedule:
-    # 5분마다 실행
     - cron: '*/5 * * * *'
+  workflow_dispatch:      # 수동 실행 버튼을 만드는 코드
 
 jobs:
   cron:
     runs-on: ubuntu-latest
     steps:
-      - name: Call API to translate Reddit posts
+      - name: Call API
         run: |
-          curl -X GET "https://reddit-umber.vercel.app//api/reddit-task" 
+          curl -X POST "https://reddit-umber.vercel.app/api/reddit-task" \
           -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}"
