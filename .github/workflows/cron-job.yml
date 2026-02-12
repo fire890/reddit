@@ -3,7 +3,7 @@ name: Reddit Post Translation Cron Job
 on:
   schedule:
     - cron: '*/5 * * * *'
-  workflow_dispatch:      # 수동 실행 버튼을 만드는 코드
+  workflow_dispatch:
 
 jobs:
   cron:
