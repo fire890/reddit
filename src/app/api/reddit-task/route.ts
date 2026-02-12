@@ -69,7 +69,11 @@ export async function POST(req: NextRequest) {
 
   try {
     // Reddit Hot 게시물 5개 가져오기
-    const response = await fetch('https://www.reddit.com/r/all/hot.json?limit=5');
+    const response = await fetch('https://www.reddit.com/r/all/hot.json?limit=5', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+      },
+    });
     if (!response.ok) {
       throw new Error(`Failed to fetch from Reddit: ${response.statusText}`);
     }

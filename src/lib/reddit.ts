@@ -28,7 +28,7 @@ async function fetchPostsFromSubreddit(subreddit: string, limit: number = 1): Pr
     console.log(`Fetching from URL: ${url}`);
     const response = await fetch(url, {
       headers: {
-        'User-Agent': 'gemini-reddit-app/1.0',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
       },
     });
 
