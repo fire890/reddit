@@ -1,28 +1,29 @@
-
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import admin from 'firebase-admin';
 
-// Firebase Admin SDK 초기화
-// Vercel 환경 변수에서 서비스 계정 키를 가져옵니다.
-// 환경 변수는 Base64로 인코딩된 JSON 문자열이어야 합니다.
+// Firebase Admin SDK 초기화 - 쪼개놓은 3개의 변수를 직접 사용합니다.
 if (!admin.apps.length) {
-  const serviceAccountKey = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
-  if (serviceAccountKey) {
+  const projectId = process.env.FB_PROJECT_ID;
+  const clientEmail = process.env.FB_CLIENT_EMAIL;
+  const privateKey = process.env.FB_PRIVATE_KEY;
+
+  if (projectId && clientEmail && privateKey) {
     try {
-      const serviceAccount = JSON.parse(
-        Buffer.from(serviceAccountKey, 'base64').toString('utf-8')
-      );
       admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount),
+        credential: admin.credential.cert({
+          projectId,
+          clientEmail,
+          // Vercel에서 줄바꿈(\n) 문자가 깨지는 것을 방지하는 처리
+          privateKey: privateKey.replace(/\\n/g, '\n'),
+        }),
       });
+      console.log('Firebase Admin SDK initialized successfully');
     } catch (e) {
-      console.error('Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY', e);
+      console.error('Failed to initialize Firebase Admin SDK:', e);
     }
   } else {
-    console.warn(
-      'Firebase Admin SDK not initialized. The FIREBASE_SERVICE_ACCOUNT_KEY environment variable is missing.'
-    );
+    console.warn('Firebase configuration is missing (FB_PROJECT_ID, FB_CLIENT_EMAIL, or FB_PRIVATE_KEY)');
   }
 }
 
